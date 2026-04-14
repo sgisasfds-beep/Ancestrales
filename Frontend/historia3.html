@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Historia | Chocolates Ancestrales</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Montserrat:wght@200;300;500&family=Playfair+Display:ital,wght@0,400;1,600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --obsidian: #0f0d0c;
+            --gold-leaf: #c5a059;
+            --bone: #f4f1ea;
+            --white-pure: #ffffff;
+            --transition-smooth: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--obsidian);
+            color: var(--bone);
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- REVELADO --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition-smooth);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 30px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition-smooth);
+        }
+
+        nav.scrolled {
+            padding: 15px 6%;
+            background: rgba(15, 13, 12, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+        }
+
+        .nav-logo {
+            width: 120px;
+            filter: brightness(0) invert(1);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--bone);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* --- HERO: CAMBIO A CORMORANT --- */
+        .hero {
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(15, 13, 12, 0.6), var(--obsidian)), url('historia.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            /* Aplicada */
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 300;
+            font-style: italic;
+            /* La itálica quita la rigidez */
+            letter-spacing: 2px;
+            background: linear-gradient(to bottom, #fff 40%, var(--gold-leaf));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 200;
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        /* --- SECCIONES --- */
+        .section {
+            padding: 100px 10%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            /* Aplicada */
+            font-size: 3rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: var(--gold-leaf);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .gold-line {
+            width: 60px;
+            height: 1px;
+            background: var(--gold-leaf);
+            margin: 0 auto 50px;
+        }
+
+        .story-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            text-align: center;
+            max-width: 850px;
+            margin: 0 auto 80px;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        /* --- TIMELINE (DISEÑO ANTERIOR) --- */
+        .timeline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .block {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(197, 160, 89, 0.1);
+            padding: 50px 40px;
+            transition: var(--transition-smooth);
+        }
+
+        .block:hover {
+            border-color: var(--gold-leaf);
+            background: rgba(197, 160, 89, 0.03);
+        }
+
+        .block h3 {
+            font-family: 'Cormorant Garamond', serif;
+            /* Aplicada */
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: var(--gold-leaf);
+            margin-bottom: 20px;
+        }
+
+        .block p {
+            font-size: 0.9rem;
+            font-weight: 300;
+            opacity: 0.8;
+        }
+
+        /* --- FUNDADORES (DISEÑO ANTERIOR) --- */
+        .founders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+            margin-top: 60px;
+        }
+
+        .founder-card {
+            text-align: center;
+        }
+
+        .img-container {
+            width: 100%;
+            aspect-ratio: 4/5;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: 1.5s ease;
+        }
+
+        .founder-card:hover img {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        .founder-card h4 {
+            font-family: 'Cormorant Garamond', serif;
+            /* Aplicada */
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+
+        .quote {
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            /* Aplicada */
+            font-style: italic;
+            font-size: 2.2rem;
+            color: var(--gold-leaf);
+            max-width: 800px;
+            margin: 120px auto 40px;
+            line-height: 1.4;
+            font-weight: 300;
+        }
+
+        /* --- FOOTER BLANCO --- */
+        footer {
+            padding: 100px 6%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            background-color: #000;
+        }
+
+        .footer-logo {
+            width: 100px;
+            margin-bottom: 35px;
+            filter: brightness(0) invert(1);
+        }
+
+        .footer-info {
+            color: var(--white-pure);
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 800px) {
+            .timeline {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        body.accessibility-active {
+            background-color: #ffffff !important;
+        }
+
+        body.accessibility-active p,
+        body.accessibility-active span,
+        body.accessibility-active li,
+        body.accessibility-active a {
+            color: #000000 !important;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        body.accessibility-active h1 {
+            font-size: 3rem !important;
+        }
+
+        body.accessibility-active h2 {
+            font-size: 2.2rem !important;
+        }
+
+        body.accessibility-active h3 {
+            font-size: 1.6rem !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav id="navbar">
+        <img src="logo.png" alt="Chocolates Ancestrales" class="nav-logo">
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="tienda.html">Tienda</a></li>
+            <li><a href="#">El Origen</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content reveal">
+            <h1>Chocolates Ancestrales</h1>
+            <p>Un sueño familiar hecho cacao</p>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="reveal">
+            <h2>El Comienzo</h2>
+            <div class="gold-line"></div>
+            <p class="story-text">
+                "Todo comenzó con una idea sencilla pero poderosa: crear algo propio que llevara nuestra esencia y
+                conectara con las raíces de nuestra tierra."
+            </p>
+        </div>
+
+        <div class="timeline">
+            <div class="block reveal">
+                <h3>El Sueño</h3>
+                <p>La idea nació en una conversación simple entre hermanos. Ambos compartíamos el deseo de crear una
+                    marca auténtica que representara nuestros valores: naturaleza, bienestar y tradición.</p>
+            </div>
+            <div class="block reveal">
+                <h3>El Descubrimiento</h3>
+                <p>Investigando el cacao entendimos su carácter sagrado, medicinal y energético. Decidimos honrar esa
+                    tradición y llevarla a las personas de una manera moderna y consciente.</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 120px;">
+            <div class="reveal">
+                <h2>Los Fundadores</h2>
+                <div class="gold-line"></div>
+            </div>
+
+            <div class="founders-grid">
+                <div class="founder-card reveal">
+                    <div class="img-container">
+                        <img src="hermano.jpeg" alt="Fundador">
+                    </div>
+                    <h4>El Visionario</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.6;">Apasionado por el emprendimiento y las ideas que
+                        construyen futuro.</p>
+                </div>
+
+                <div class="founder-card reveal">
+                    <div class="img-container">
+                        <img src="hermana.jpeg" alt="Fundadora">
+                    </div>
+                    <h4>La Creativa</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.6;">Su sensibilidad dio el alma y el detalle artístico a
+                        cada una de nuestras creaciones.</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="quote reveal">
+            "El cacao no es solo un alimento. Es un puente entre nuestras raíces, nuestra familia y el bienestar."
+        </p>
+    </section>
+
+    <footer>
+        <img src="logo.png" class="footer-logo" alt="Chocolates Ancestrales">
+        <p class="footer-info">© 2026 CHOCOLATES ANCESTRALES | ALTA CHOCOLATERÍA</p>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+    </script>
+    <script>
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('accesibilidad') === 'activa') {
+                document.body.classList.add('accessibility-active');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

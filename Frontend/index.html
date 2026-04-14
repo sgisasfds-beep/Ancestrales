@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancestrales | Lujo en cada Grano</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@200;300;500&family=Playfair+Display:ital,wght@0,400;1,600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --obsidian: #0f0d0c;
+            --gold-leaf: #c5a059;
+            --bone: #f4f1ea;
+            --white-pure: #ffffff;
+            --silk: rgba(244, 241, 234, 0.9);
+            --anim-speed: 0.8s;
+            --transition-smooth: all var(--anim-speed) cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--obsidian);
+            color: var(--bone);
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- ANIMACIÓN DE REVELADO --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition-smooth);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- NAVEGACIÓN --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 30px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition-smooth);
+        }
+
+        nav.scrolled {
+            padding: 15px 6%;
+            background: rgba(15, 13, 12, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+        }
+
+        .nav-logo {
+            width: 120px;
+            filter: brightness(0) invert(1);
+            transition: var(--transition-smooth);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--bone);
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        /* --- HERO: CORRECCIÓN DE NOMBRE --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.35;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 8vw, 5.5rem);
+            font-weight: 700;
+            letter-spacing: 12px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(to bottom, #fff 40%, var(--gold-leaf));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .hero p {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+            color: var(--bone);
+        }
+
+        /* --- BOTÓN DE LUJO --- */
+        .btn-luxury {
+            padding: 20px 50px;
+            background: transparent;
+            border: 1px solid var(--gold-leaf);
+            color: var(--gold-leaf);
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-luxury:hover {
+            color: var(--obsidian);
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.3);
+        }
+
+        .btn-luxury::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--gold-leaf);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .btn-luxury:hover::before {
+            width: 100%;
+        }
+
+        /* --- GRILLA DE PRODUCTOS --- */
+        .section-title {
+            padding: 100px 0 50px;
+            text-align: center;
+        }
+
+        .section-title h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            letter-spacing: 8px;
+            color: var(--gold-leaf);
+        }
+
+        .grid-premium {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2px;
+            background: rgba(197, 160, 89, 0.1);
+            margin-bottom: 100px;
+        }
+
+        .product-card {
+            background: var(--obsidian);
+            padding: 60px 40px;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+
+        .product-card img {
+            width: 100%;
+            margin-bottom: 30px;
+            transition: 1s ease;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .price-tag {
+            display: block;
+            color: var(--gold-leaf);
+            font-size: 1.2rem;
+            margin: 15px 0 25px;
+            font-weight: 300;
+        }
+
+        /* --- CARRITO --- */
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--silk);
+            padding: 25px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--obsidian);
+            transform: translateY(100%);
+            transition: var(--transition-smooth);
+            z-index: 2000;
+        }
+
+        .cart-bar.active {
+            transform: translateY(0);
+        }
+
+        .acc-toggle {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: rgba(15, 13, 12, 0.85);
+            /* 👈 mejora */
+            backdrop-filter: blur(8px);
+            /* 👈 efecto premium */
+            color: var(--gold-leaf);
+            border: 1px solid var(--gold-leaf);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Cinzel';
+            font-size: 0.7rem;
+            cursor: pointer;
+            z-index: 3000;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .acc-toggle:hover {
+            background: var(--gold-leaf);
+            color: var(--obsidian);
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.3);
+        }
+
+        /* --- FOOTER: LOGO E INFO EN BLANCO PURO --- */
+        footer {
+            padding: 100px 6%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            background-color: #000;
+            /* Fondo ligeramente más profundo para el footer */
+        }
+
+        .footer-logo {
+            width: 100px;
+            margin-bottom: 35px;
+            filter: brightness(0) invert(1);
+            /* Logo Blanco Puro */
+            opacity: 1;
+            /* Máxima visibilidad */
+        }
+
+        .footer-info {
+            color: var(--white-pure);
+            /* Texto Blanco Puro */
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 1;
+            /* Sin transparencia para máxima calidad */
+        }
+
+        .footer-line {
+            width: 40px;
+            height: 1px;
+            background: var(--gold-leaf);
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav id="navbar">
+        <img src="logo.png" alt="Ancestrales" class="nav-logo">
+        <ul>
+            <li><a href="#productos">Colección</a></li>
+            <li><a href="bienestar2.html">Bienestar</a></li>
+            <li><a href="tienda.html">Tienda</a></li>
+            <li><a href="historia3.html">El Origen</a></li>
+            <li><a href="#">Contacto</a></li>
+
+        </ul>
+        <div style="font-size: 0.7rem; letter-spacing: 2px; cursor:pointer" onclick="toggleCart()">RESERVA (<span
+                id="count">0</span>)</div>
+    </nav>
+
+    <section class="hero">
+        <img src="paisaje.png" class="hero-video-bg" alt="Campo de Cacao">
+        <div class="hero-content reveal">
+            <p>Nutrición sagrada recuperada de las raíces</p>
+            <h1>CHOCOLATES <br> ANCESTRALES</h1>
+            <button class="btn-luxury" onclick="document.getElementById('productos').scrollIntoView()">Explorar la
+                Cosecha</button>
+        </div>
+    </section>
+
+    <div class="section-title reveal" id="productos">
+        <h2>Selección Premium</h2>
+        <p style="font-family: 'Playfair Display'; font-style: italic; opacity: 0.5;">Ediciones limitadas numeradas</p>
+    </div>
+
+    <section class="grid-premium">
+        <div class="product-card reveal">
+            <img src="cacao1.jpeg" alt="Obsidian">
+            <h3 style="font-family: 'Cinzel'; letter-spacing: 3px;">Obsidian 100%</h3>
+            <span class="price-tag">$12.000 COP</span>
+            <button class="btn-luxury" style="padding: 12px 30px; font-size: 0.65rem;"
+                onclick="addToCart('Obsidian 100%', 12000)">Añadir Reserva</button>
+        </div>
+
+        <div class="product-card reveal">
+            <img src="cacao2.jpeg" alt="Oro">
+            <h3 style="font-family: 'Cinzel'; letter-spacing: 3px;">Oro Especiado</h3>
+            <span class="price-tag">$14.500 COP</span>
+            <button class="btn-luxury" style="padding: 12px 30px; font-size: 0.65rem;"
+                onclick="addToCart('Oro Especiado', 14500)">Añadir Reserva</button>
+        </div>
+
+        <div class="product-card reveal">
+            <img src="cacao3.jpeg" alt="Elixir">
+            <h3 style="font-family: 'Cinzel'; letter-spacing: 3px;">Elixir Ancestral</h3>
+            <span class="price-tag">$9.500 COP</span>
+            <button class="btn-luxury" style="padding: 12px 30px; font-size: 0.65rem;"
+                onclick="addToCart('Elixir Ancestral', 9500)">Añadir Reserva</button>
+        </div>
+    </section>
+
+    <div class="cart-bar" id="cartBar">
+        <div>
+            <p style="font-size: 0.6rem; letter-spacing: 2px; opacity: 0.7;">SU SELECCIÓN</p>
+            <h4 id="totalDisplay" style="font-family: 'Cinzel'; font-size: 1.2rem;">$0.00</h4>
+        </div>
+        <button class="btn-luxury" style="background: var(--obsidian); color: var(--gold-leaf); border: none;"
+            onclick="checkout()">Solicitar vía WhatsApp</button>
+    </div>
+
+    <footer>
+        <img src="logo.png" class="footer-logo" alt="Ancestrales">
+        <div class="footer-line"></div>
+        <p class="footer-info">© 2026 ANCESTRALES | ALTO CACAO DE ORIGEN</p>
+        <p class="footer-info" style="margin-top: 10px; font-size: 0.55rem; opacity: 0.7;">BOGOTÁ • COLOMBIA</p>
+    </footer>
+
+    <script>
+
+        if (sessionStorage.getItem('visitado')) {
+
+            document.documentElement.style.setProperty('--anim-speed', '0.3s');
+        } else {
+
+            sessionStorage.setItem('visitado', 'true');
+        }
+        // --- ANIMACIONES ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- SCROLL NAV ---
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // --- CARRITO ---
+        let cart = [];
+        let total = 0;
+
+        function addToCart(name, price) {
+            cart.push(name);
+            total += price;
+            document.getElementById('count').innerText = cart.length;
+            document.getElementById('totalDisplay').innerText = `$${total.toLocaleString('es-CO')} COP`;
+            document.getElementById('cartBar').classList.add('active');
+        }
+
+        function checkout() {
+            const waMsg = `Saludos. Deseo solicitar una reserva de Ancestrales: ${cart.join(", ")}. Total: $${total} COP.`;
+            window.open(`https://wa.me/573000000000?text=${encodeURIComponent(waMsg)}`);
+        }
+    </script>
+
+    <button class="acc-toggle" onclick="irAccesibilidad()" id="accToggle" aria-label="Activar modo lectura">Accesibilidad</button>
+
+    <script>
+        function irAccesibilidad() {
+            localStorage.setItem('accesibilidad', 'activa'); // 👈 AQUÍ
+            window.location.href = 'accesibilidad.html';
+        }
+    </script>
+
+</body>
+
+</html>

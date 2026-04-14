@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienestar Ancestral | Chocolates Ancestrales</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@200;300;500&family=Playfair+Display:ital,wght@0,400;1,600&display=swap"
+        rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --cocoa: #4e342e;
+            --taupe: #a1887f;
+            --cream: #f9f7f2;
+            --gold: #c5a059;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--cocoa);
+            font-family: 'Montserrat', sans-serif;
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            margin: 0;
+            font-weight: 300;
+            /* Peso ligero de index3 */
+        }
+
+        /* NAV - Tipografía Unificada */
+        nav {
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(249, 247, 242, 0.96);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(78, 52, 46, 0.1);
+        }
+
+        .nav-group {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-logo {
+            width: 80px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--cocoa);
+            font-size: 0.7rem;
+            /* Tamaño de index3 */
+            letter-spacing: 3px;
+            /* Espaciado de index3 */
+            font-weight: 500;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--gold);
+        }
+
+        /* HEADER - Estilo Imponente */
+        .header-section {
+            padding: 100px 5% 40px;
+            text-align: center;
+        }
+
+        .header-section h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            letter-spacing: 10px;
+            /* Espaciado premium */
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .header-section p {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+            color: var(--taupe);
+        }
+
+        /* GRID VIDEOS */
+        .video-grid {
+            max-width: 1200px;
+            margin: auto;
+            padding: 40px 5% 120px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 80px 40px;
+        }
+
+        .video-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .visual-container {
+            position: relative;
+            width: 350px;
+            height: 480px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .marco-fondo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url("marco-vertical.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            pointer-events: none;
+            z-index: 10;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.08));
+        }
+
+        .video-wrapper {
+            position: absolute;
+            width: 210px;
+            height: 340px;
+            overflow: hidden;
+            border-radius: 12px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            width: 325px;
+            height: 575px;
+            border: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.64);
+            transform-origin: center;
+        }
+
+        .video-info {
+            margin-top: 25px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .video-info h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .video-info p {
+            font-size: 0.85rem;
+            color: var(--taupe);
+            line-height: 1.8;
+        }
+
+        footer {
+            padding: 60px 5%;
+            background: #1a1a1a;
+            color: var(--cream);
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+        }
+
+        body.accessibility-active {
+            background-color: #ffffff !important;
+        }
+
+        body.accessibility-active p,
+        body.accessibility-active span,
+        body.accessibility-active li,
+        body.accessibility-active a {
+            color: #000000 !important;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        body.accessibility-active h1 {
+            font-size: 3rem !important;
+        }
+
+        body.accessibility-active h2 {
+            font-size: 2.2rem !important;
+        }
+
+        body.accessibility-active h3 {
+            font-size: 1.6rem !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-group">
+            <img src="logo.png" alt="Logo" class="nav-logo">
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="tienda.html">Tienda</a></li>
+                <li><a href="#" style="color:var(--gold);border-bottom:1px solid var(--gold);">Bienestar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="header-section">
+        <h1>BIENESTAR ANCESTRAL</h1>
+        <p>Rituales, consejos y sabiduría del cacao.</p>
+    </header>
+
+    <main class="video-grid" id="ritual-container">
+        <p style="text-align: center; grid-column: 1/-1; font-family:'Cinzel'; letter-spacing: 2px;">Cargando sabiduría
+            ancestral...</p>
+    </main>
+
+    <footer>
+        <p>© 2026 CHOCOLATES ANCESTRALES | ARTE Y TRADICIÓN</p>
+    </footer>
+
+    <script>
+        // Tu configuración de Firebase aquí...
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "ID",
+            appId: "APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const ritualContainer = document.getElementById('ritual-container');
+
+        db.ref('videos_tiktok').on('value', (snapshot) => {
+            ritualContainer.innerHTML = "";
+            if (!snapshot.exists()) {
+                ritualContainer.innerHTML = "<p style='text-align:center; grid-column:1/-1; font-family:Cinzel;'>Aún no hay rituales publicados.</p>";
+                return;
+            }
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                const article = document.createElement('article');
+                article.className = 'video-card';
+                article.innerHTML = `
+                <div class="visual-container">
+                    <div class="marco-fondo"></div>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.tiktok.com/embed/v2/${data.tiktokID}" allow="autoplay; encrypted-media" scrolling="no"></iframe>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <h3>${data.titulo}</h3>
+                    <p>${data.descripcion}</p>
+                </div>
+            `;
+                ritualContainer.prepend(article);
+            });
+        });
+    </script>
+
+    <script>
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('accesibilidad') === 'activa') {
+                document.body.classList.add('accessibility-active');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancestrales | El Origen del Lujo</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --cocoa: #4e342e;
+            --taupe: #a1887f;
+            --cream: #f9f7f2;
+            --gold: #c5a059;
+            --white: #ffffff;
+            --obsidian: #0f0d0c;
+            /* El tiempo se controla por JS para visitas recurrentes */
+            --anim-speed: 0.8s;
+            --transition-smooth: all var(--anim-speed) cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--cream);
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            color: var(--cocoa);
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+            font-size: 18px;
+            transition: background-color 0.5s ease;
+        }
+
+        /* --- ACCESIBILIDAD INVISIBLE --- */
+        .skip-link {
+            position: absolute;
+            top: -50px;
+            left: 0;
+            background: var(--gold);
+            color: var(--obsidian);
+            padding: 10px;
+            z-index: 10001;
+            text-decoration: none;
+            font-family: 'Cinzel';
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+
+        /* --- ANIMACIONES --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: var(--transition-smooth);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- NAVEGACIÓN --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 30px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(249, 247, 242, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(78, 52, 46, 0.05);
+            transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        nav.scrolled {
+            padding: 15px 8%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-logo {
+            width: 130px;
+            transition: 0.5s;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--cocoa);
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+            transition: 0.3s;
+            opacity: 0.8;
+        }
+
+        nav a:hover {
+            color: var(--gold);
+            opacity: 1;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+            padding: 0 5%;
+            background-color: var(--obsidian);
+        }
+
+        .hero-img-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+
+        .hero p {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            color: var(--gold);
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            font-weight: 700;
+            letter-spacing: 15px;
+            line-height: 1.1;
+            margin-bottom: 40px;
+            color: var(--white);
+            text-transform: uppercase;
+        }
+
+        /* --- BOTONES PREMIUM --- */
+        .btn-luxury {
+            padding: 22px 50px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-luxury:hover {
+            color: var(--cream);
+        }
+
+        .btn-luxury::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gold);
+            transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: -1;
+        }
+
+        .btn-luxury:hover::before {
+            left: 0;
+        }
+
+        .btn-dark {
+            border-color: var(--cocoa);
+            color: var(--cocoa);
+        }
+
+        .btn-dark::before {
+            background: var(--cocoa);
+        }
+
+        /* --- SECCIÓN PRODUCTOS --- */
+        .section-title {
+            padding: 120px 0 60px;
+            text-align: center;
+        }
+
+        .section-title span {
+            font-family: 'Playfair Display';
+            font-style: italic;
+            color: var(--gold);
+            font-size: 1.4rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .section-title h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.8rem;
+            letter-spacing: 10px;
+            color: var(--cocoa);
+            text-transform: uppercase;
+        }
+
+        .grid-premium {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 50px;
+            padding: 0 8% 120px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: var(--white);
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(78, 52, 46, 0.05);
+            transition: var(--transition-smooth);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(78, 52, 46, 0.08);
+        }
+
+        .product-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            margin-bottom: 30px;
+        }
+
+        .product-card h3 {
+            font-family: 'Cinzel';
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .price-tag {
+            display: block;
+            color: var(--gold);
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        /* --- CARRITO INFERIOR --- */
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--white);
+            padding: 30px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%);
+            transition: var(--transition-smooth);
+            z-index: 2000;
+        }
+
+        .cart-bar.active {
+            transform: translateY(0);
+        }
+
+        /* --- BOTÓN ACCESIBILIDAD --- */
+        .acc-toggle {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: var(--obsidian);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Cinzel';
+            font-size: 0.7rem;
+            cursor: pointer;
+            z-index: 3000;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .acc-toggle:hover {
+            background: var(--gold);
+            color: var(--obsidian);
+        }
+
+        /* --- MODO ACCESIBILIDAD --- */
+        body.accessibility-active {
+            background-color: #ffffff !important;
+        }
+
+        body.accessibility-active p,
+        body.accessibility-active span,
+        body.accessibility-active li {
+            font-weight: 500 !important;
+            color: #000000 !important;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 100px 8% 60px;
+            background: var(--obsidian);
+            color: var(--cream);
+            text-align: center;
+        }
+
+        .footer-logo {
+            width: 100px;
+            margin-bottom: 30px;
+            filter: brightness(0) invert(1);
+        }
+
+        .footer-info {
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        .footer-line {
+            width: 60px;
+            height: 1px;
+            background: var(--gold);
+            margin: 25px auto;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+                letter-spacing: 5px;
+            }
+
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="#productos" class="skip-link">Saltar al contenido principal</a>
+
+    <nav id="navbar" role="navigation" aria-label="Menú principal">
+        <img src="logo.png" alt="Logo de Ancestrales - Chocolatería de Origen" class="nav-logo">
+        <ul>
+            <li><a href="#productos">Colección</a></li>
+            <li><a href="bienestar2.html">Bienestar</a></li>
+            <li><a href="tienda.html">La Tienda</a></li>
+            <li><a href="historia.html">Nuestro Origen</a></li>
+        </ul>
+        <div id="cartStatus"
+            style="font-family: 'Cinzel'; font-size: 0.8rem; letter-spacing: 2px; cursor:pointer; color: var(--gold)"
+            onclick="toggleCart()" aria-label="Ver mi reserva">
+            RESERVA (<span id="count">0</span>)
+        </div>
+    </nav>
+
+    <button class="acc-toggle" id="accToggle" onclick="toggleAccesibilidad()" aria-label="Activar modo lectura">
+        Accesibilidad
+    </button>
+
+    <main id="main-content">
+        <section class="hero">
+            <img src="paisaje.jpg" class="hero-img-bg" alt="Vista panorámica de una plantación de cacao premium">
+            <div class="hero-content reveal">
+                <p>El Renacer del Cacao Sagrado</p>
+                <h1>EXPERIENCIA <br> ANCESTRAL</h1>
+                <button class="btn-luxury" onclick="document.getElementById('productos').scrollIntoView()">Explorar la
+                    Cosecha</button>
+            </div>
+        </section>
+
+        <div class="section-title reveal" id="productos">
+            <span>Cosecha Limitada 2026</span>
+            <h2>Selección Premium</h2>
+        </div>
+
+        <section class="grid-premium" role="region" aria-label="Productos destacados">
+            <article class="product-card reveal">
+                <img src="cacao1.jpeg" alt="Barra de chocolate Obsidian 100% cacao puro">
+                <h3>Obsidian 100%</h3>
+                <span class="price-tag">$12.000 COP</span>
+                <button class="btn-luxury btn-dark" style="padding: 15px 30px; font-size: 0.75rem;"
+                    onclick="addToCart('Obsidian 100%', 12000)">Añadir a mi Selección</button>
+            </article>
+
+            <article class="product-card reveal">
+                <img src="cacao2.jpeg" alt="Chocolate Oro Especiado con notas de canela y vainilla">
+                <h3>Oro Especiado</h3>
+                <span class="price-tag">$14.500 COP</span>
+                <button class="btn-luxury btn-dark" style="padding: 15px 30px; font-size: 0.75rem;"
+                    onclick="addToCart('Oro Especiado', 14500)">Añadir a mi Selección</button>
+            </article>
+
+            <article class="product-card reveal">
+                <img src="cacao3.jpeg" alt="Elixir Ancestral mezcla especial de la casa">
+                <h3>Elixir Ancestral</h3>
+                <span class="price-tag">$9.500 COP</span>
+                <button class="btn-luxury btn-dark" style="padding: 15px 30px; font-size: 0.75rem;"
+                    onclick="addToCart('Elixir Ancestral', 9500)">Añadir a mi Selección</button>
+            </article>
+        </section>
+    </main>
+
+    <div class="cart-bar" id="cartBar" aria-live="polite">
+        <div>
+            <p style="font-size: 0.7rem; letter-spacing: 2px; color: var(--taupe); text-transform: uppercase;">Su
+                Selección de Lujo</p>
+            <h4 id="totalDisplay" style="font-family: 'Cinzel'; font-size: 1.5rem; color: var(--cocoa)">$0.00</h4>
+        </div>
+        <button class="btn-luxury" style="background: var(--cocoa); color: var(--white); border: none;"
+            onclick="checkout()">Finalizar Pedido vía WhatsApp</button>
+    </div>
+
+    <footer role="contentinfo">
+        <img src="logo.png" class="footer-logo" alt="Ancestrales">
+        <div class="footer-line"></div>
+        <p class="footer-info">© 2026 ANCESTRALES | ALTA CHOCOLATERÍA DE ORIGEN</p>
+        <p class="footer-info" style="margin-top: 10px; font-size: 0.65rem; opacity: 0.5;">BOGOTÁ • COLOMBIA</p>
+    </footer>
+
+    <script>
+        // --- CONTROL DE VELOCIDAD PRO ---
+        if (sessionStorage.getItem('visitado')) {
+            document.documentElement.style.setProperty('--anim-speed', '0.4s');
+        } else {
+            sessionStorage.setItem('visitado', 'true');
+        }
+
+
+        
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('accesibilidad') === 'activa') {
+                document.body.classList.add('accessibility-active');
+                document.getElementById('accToggle').innerText = "Modo Normal";
+            }
+        });
+
+        
+        function toggleAccesibilidad() {
+            const activo = document.body.classList.contains('accessibility-active');
+
+            if (activo) {
+                
+                localStorage.setItem('accesibilidad', 'off');
+                window.location.href = 'index.html';
+            } else {
+                
+                document.body.classList.add('accessibility-active');
+                localStorage.setItem('accesibilidad', 'activa');
+                document.getElementById('accToggle').innerText = "Modo Normal";
+            }
+        }
+
+
+        // --- REVELADO ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // --- NAVBAR SCROLL ---
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // --- LÓGICA DE CARRITO ---
+        let cart = [];
+        let total = 0;
+
+        function addToCart(name, price) {
+            cart.push(name);
+            total += price;
+            document.getElementById('count').innerText = cart.length;
+            document.getElementById('totalDisplay').innerText = `$${total.toLocaleString('es-CO')} COP`;
+            document.getElementById('cartBar').classList.add('active');
+        }
+
+        function toggleCart() {
+            document.getElementById('cartBar').classList.toggle('active');
+        }
+
+        function checkout() {
+            if (cart.length === 0) return alert("Por favor, seleccione un producto.");
+            const waMsg = `Saludos. Deseo solicitar una reserva de Ancestrales: ${cart.join(", ")}. Total: $${total.toLocaleString('es-CO')} COP.`;
+            window.open(`https://wa.me/573000000000?text=${encodeURIComponent(waMsg)}`);
+        }
+    </script>
+
+</body>
+
+</html>
