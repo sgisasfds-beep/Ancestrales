@@ -502,6 +502,33 @@
                 letter-spacing: 8px;
             }
         }
+
+        #respuesta-ia {
+            margin-top: 35px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            color: var(--cocoa);
+            max-width: 850px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+            text-align: left;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.5);
+            /* Fondo sutil para resaltar la respuesta */
+            border-radius: 4px;
+        }
+
+        /* Formato para los párrafos que insertará el JavaScript */
+        #respuesta-ia p {
+            margin-bottom: 1.2rem;
+        }
+
+        /* Formato para resaltar términos clave en dorado */
+        #respuesta-ia strong {
+            color: var(--gold);
+            font-weight: 600;
+        }
     </style>
     <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
     </head>
@@ -670,9 +697,8 @@
                     <button onclick="consultarIA()" class="btn-luxury"
                         style="width: auto; padding: 18px 40px;">Consultar</button>
                 </div>
-                <div id="respuesta-ia"
-                    style="margin-top: 35px; font-family: 'Montserrat'; font-size: 1rem; color: var(--cocoa); max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.8;">
-                </div>
+                <div id="respuesta-ia"></div>
+
             </article>
 
         </section>
@@ -811,11 +837,15 @@
             // --- INTEGRACIÓN DE PAGO (WOMPI) ---
             // --- LÓGICA DEL ASESOR PROFESIONAL ---
             async function consultarIA() {
-                const pregunta = document.getElementById('pregunta-ia').value;
+                const preguntaInput = document.getElementById('pregunta-ia');
                 const respuestaDiv = document.getElementById('respuesta-ia');
+                const pregunta = preguntaInput.value.trim();
 
                 if (!pregunta) return;
-                respuestaDiv.innerText = "Analizando su consulta con el catálogo...";
+
+                // Estado de carga y feedback visual
+                respuestaDiv.style.opacity = "0.6";
+                respuestaDiv.innerHTML = "<p><em>El Sommelier está analizando su consulta con el catálogo...</em></p>";
 
                 try {
                     const res = await fetch(`${API_BASE_URL}/sommelier`, {
@@ -823,10 +853,30 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ pregunta: pregunta })
                     });
+
+                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
+
                     const data = await res.json();
-                    respuestaDiv.innerText = data.respuesta;
+
+                    if (data.respuesta) {
+                        
+                        const formattedResponse = data.respuesta
+                            .trim()
+                            .split('\n\n')
+                            .map(parrafo => `<p>${parrafo.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`)
+                            .join('');
+
+                        respuestaDiv.innerHTML = formattedResponse;
+                        respuestaDiv.style.opacity = "1";
+
+                        // Limpieza del campo de entrada
+                        preguntaInput.value = "";
+                    }
+
                 } catch (e) {
-                    respuestaDiv.innerText = "Lo sentimos, el servicio de asesoría no está disponible. Por favor, intente más tarde.";
+                    console.error("Error en consulta Sommelier:", e);
+                    respuestaDiv.style.opacity = "1";
+                    respuestaDiv.innerHTML = "<p>Lo sentimos, el servicio de asesoría no está disponible en este momento. Por favor, intente más tarde.</p>";
                 }
             }
 
