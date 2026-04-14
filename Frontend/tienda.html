@@ -504,30 +504,43 @@
         }
 
         #respuesta-ia {
-            margin-top: 35px;
+            margin-top: 50px;
+            padding: 45px;
+            background: rgba(255, 255, 255, 0.7);
+            /* Transparencia para que se vea la textura de papel */
+            backdrop-filter: blur(5px);
+            border-left: 2px solid var(--gold);
+            /* Acento elegante */
+            box-shadow: 0 20px 50px rgba(78, 52, 46, 0.04);
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.05rem;
             color: var(--cocoa);
-            max-width: 850px;
+            line-height: 2;
+            text-align: left;
+            max-width: 900px;
             margin-left: auto;
             margin-right: auto;
-            line-height: 1.8;
-            text-align: left;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.5);
-            /* Fondo sutil para resaltar la respuesta */
-            border-radius: 4px;
+            border-radius: 2px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.6s ease;
         }
 
-        /* Formato para los párrafos que insertará el JavaScript */
+        /* Cuando la respuesta aparece */
+        #respuesta-ia.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         #respuesta-ia p {
-            margin-bottom: 1.2rem;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            font-weight: 300;
         }
 
-        /* Formato para resaltar términos clave en dorado */
         #respuesta-ia strong {
             color: var(--gold);
             font-weight: 600;
+            letter-spacing: 1px;
         }
     </style>
     <script type="text/javascript" src="https://checkout.wompi.co/widget.js"></script>
@@ -843,9 +856,10 @@
 
                 if (!pregunta) return;
 
-                // Estado de carga y feedback visual
-                respuestaDiv.style.opacity = "0.6";
-                respuestaDiv.innerHTML = "<p><em>El Sommelier está analizando su consulta con el catálogo...</em></p>";
+                // Reset de estado y animación
+                respuestaDiv.classList.remove('visible');
+                respuestaDiv.innerHTML = "<p><em>El Sommelier está seleccionando las mejores notas para usted...</em></p>";
+                respuestaDiv.classList.add('visible');
 
                 try {
                     const res = await fetch(`${API_BASE_URL}/sommelier`, {
@@ -854,29 +868,21 @@
                         body: JSON.stringify({ pregunta: pregunta })
                     });
 
-                    if (!res.ok) throw new Error("Error en la respuesta del servidor");
-
                     const data = await res.json();
 
                     if (data.respuesta) {
-                        
+                        // Formateo avanzado: maneja párrafos y negritas
                         const formattedResponse = data.respuesta
                             .trim()
-                            .split('\n\n')
-                            .map(parrafo => `<p>${parrafo.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`)
+                            .split(/\n\s*\n/) // Divide por cualquier variante de doble salto de línea
+                            .map(parrafo => `<p>${parrafo.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p>`)
                             .join('');
 
                         respuestaDiv.innerHTML = formattedResponse;
-                        respuestaDiv.style.opacity = "1";
-
-                        // Limpieza del campo de entrada
                         preguntaInput.value = "";
                     }
-
                 } catch (e) {
-                    console.error("Error en consulta Sommelier:", e);
-                    respuestaDiv.style.opacity = "1";
-                    respuestaDiv.innerHTML = "<p>Lo sentimos, el servicio de asesoría no está disponible en este momento. Por favor, intente más tarde.</p>";
+                    respuestaDiv.innerHTML = "<p>Nuestra cava de datos no responde. Por favor, intente en un momento.</p>";
                 }
             }
 
