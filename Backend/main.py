@@ -90,9 +90,9 @@ async def sommelier_ia(req: ChatRequest):
         
         # 3. Configuración del modelo para respuestas consistentes
         model = genai.GenerativeModel(
-            model_name='gemini-pro',
+            model_name='gemini-1.5-flash', # 👈 Este es el nombre actualizado
             generation_config={
-                "temperature": 0.4, # Temperatura baja para mayor seriedad y precisión
+                "temperature": 0.4,
                 "max_output_tokens": 150,
             }
         )
