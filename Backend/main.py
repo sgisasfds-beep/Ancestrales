@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from supabase import create_client, Client
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 # Carga variables de entorno local si existe un archivo .env
@@ -14,17 +15,15 @@ load_dotenv()
 app = FastAPI(title="Chocolates Ancestrales API")
 
 # --- CONFIGURACIÓN DE CORS ---
-# Permite que tu tienda.html se comunique con este servidor en Render
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # En producción, puedes cambiar "*" por tu dominio específico
+    allow_origins=["*"], # En producción, cambia "*" por tu dominio específico
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
-# Estas variables deben estar configuradas en el panel de Render
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 WOMPI_INTEGRITY_SECRET = os.getenv("WOMPI_INTEGRITY_SECRET")
@@ -32,7 +31,8 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Inicialización de clientes
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-genai.configure(api_key=GEMINI_API_KEY)
+# Nueva forma de inicializar el cliente de Gemini
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 # --- MODELOS DE DATOS ---
 class ChatRequest(BaseModel):
@@ -55,7 +55,6 @@ async def generate_signature(req: SignatureRequest):
     Genera la firma de integridad SHA-256 requerida por Wompi.
     """
     try:
-        # Cadena de integridad: referencia + monto + moneda + secreto
         chain = f"{req.reference}{req.amount_in_cents}{req.currency}{WOMPI_INTEGRITY_SECRET}"
         signature = hashlib.sha256(chain.encode()).hexdigest()
         return {"signature": signature}
@@ -65,14 +64,14 @@ async def generate_signature(req: SignatureRequest):
 @app.post("/sommelier")
 async def sommelier_ia(req: ChatRequest):
     """
-    Asesor profesional que utiliza datos de Supabase para responder.
+    Asesor profesional que utiliza datos de Supabase y Gemini 3 Flash.
     """
     try:
         # 1. Obtener catálogo actualizado de Supabase
         productos_db = supabase.table("productos").select("*").execute()
         
-        # 2. PROMPT PROFESIONAL Y DIRECTO (HUMANO)
-        contexto = """
+        # 2. Configuración de instrucciones del sistema
+        instrucciones_sistema = """
         Eres un Asesor Especialista de la tienda Chocolates Ancestrales. 
         Tu tono es profesional, servicial y humano. Habla como un experto que atiende una boutique de lujo: con respeto pero de forma natural.
 
@@ -86,30 +85,29 @@ async def sommelier_ia(req: ChatRequest):
         """
         
         for p in productos_db.data:
-            contexto += f"- {p['nombre']}: {p['perfil_sensorial']}. Maridaje: {p['maridaje_clave']}. Precio: ${p['precio_cop']} COP.\n"
+            instrucciones_sistema += f"- {p['nombre']}: {p['perfil_sensorial']}. Maridaje: {p['maridaje_clave']}. Precio: ${p['precio_cop']} COP.\n"
         
-        # 3. Configuración del modelo para respuestas consistentes
-        model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash', # 👈 Este es el nombre actualizado
-            generation_config={
-                "temperature": 0.4,
-                "max_output_tokens": 150,
-            }
+        # 3. Generación de contenido con el nuevo SDK
+        response = client.models.generate_content(
+            model="gemini-3-flash",
+            config=types.GenerateContentConfig(
+                system_instruction=instrucciones_sistema,
+                temperature=1.0, # Recomendado para Gemini 3
+                max_output_tokens=150,
+            ),
+            contents=req.pregunta
         )
-        
-        prompt_final = f"{contexto}\n\nCliente: {req.pregunta}\nAsesor:"
-        response = model.generate_content(prompt_final)
         
         return {"respuesta": response.text}
         
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error detallado: {e}")
         raise HTTPException(status_code=500, detail="El servicio de asesoría no está disponible en este momento.")
 
 @app.post("/webhook-wompi")
 async def webhook_wompi(data: dict):
     """
-    Recibe la confirmación de pago de Wompi para futuros procesos.
+    Recibe la confirmación de pago de Wompi.
     """
     print(f"Evento recibido de Wompi: {data}")
     return {"status": "ok"}
