@@ -87,18 +87,23 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 25px;
-            padding-right: 15px;
+            gap: 20px;
+            /* Reducido un poco para mejor flujo */
+            padding: 20px;
+            min-height: 400px;
+            /* Asegura espacio mínimo */
         }
 
-        /* Burbujas de Mensaje */
         .message {
-            max-width: 80%;
-            padding: 20px 25px;
-            border-radius: 4px;
-            line-height: 1.8;
-            font-size: 1rem;
-            animation: fadeIn 0.5s ease forwards;
+            max-width: 85%;
+            /* Un poco más ancho para textos largos */
+            padding: 15px 20px;
+            border-radius: 8px;
+            line-height: 1.6;
+            word-wrap: break-word;
+            /* Evita que palabras largas rompan el layout */
+            height: auto;
+            /* Permite que crezca según el texto */
         }
 
         @keyframes fadeIn {
@@ -225,17 +230,13 @@
 
         async function sendMessage() {
             const input = document.getElementById('user-input');
-            const container = document.getElementById('chat-messages');
             const text = input.value.trim();
-
             if (!text) return;
 
-            // Mensaje del Usuario
             appendMessage(text, 'user-msg');
             input.value = '';
 
-            // Indicador de carga
-            const loadingDiv = appendMessage('<em>El Sommelier está analizando...</em>', 'sommelier-msg');
+            const loadingDiv = appendMessage('<em>El Sommelier está analizando su petición...</em>', 'sommelier-msg');
 
             try {
                 const res = await fetch(`${API_BASE_URL}/sommelier`, {
@@ -245,18 +246,19 @@
                 });
                 const data = await res.json();
 
-                loadingDiv.remove(); // Quitamos el cargando
+                loadingDiv.remove();
 
                 if (data.respuesta) {
+                    // Mejora en el formateo: reemplaza saltos de línea por <br> o párrafos
                     const formatted = data.respuesta
                         .trim()
-                        .split(/\n\n/)
-                        .map(p => `<p>${p.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`)
-                        .join('');
+                        .replace(/\n/g, '<br>') // Mantiene todos los saltos de línea del modelo
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
                     appendMessage(formatted, 'sommelier-msg');
                 }
             } catch (e) {
-                loadingDiv.innerHTML = "Lo sentimos, la cava de datos no está disponible actualmente.";
+                loadingDiv.innerHTML = "La conexión con la cava se ha interrumpido.";
             }
         }
 
